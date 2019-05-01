@@ -118,7 +118,7 @@ router.beforeEach((to, from, next) => {
       if(to.meta.requires.includes('client')) {
         next({ name: 'ClientLogin' })
       } else if(to.meta.requires.includes('head manager')) {
-        next({ name: 'HeadManagerLogin' })
+        next({ name: 'AdminLogin' })
       } else if(to.meta.requires.includes(null)) {
         if(store.getters.loginType == 'client') {
           next({ name: 'ClientLaboratoryAnalysis' })

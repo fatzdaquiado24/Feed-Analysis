@@ -95,7 +95,7 @@ export default {
 	},
 	methods: {
 		logout() {
-			const logoutRoute = this.$store.getters.loginType == 'client' ? 'ClientLogin' : 'HeadManagerLogin'
+			const logoutRoute = this.$store.getters.loginType == 'client' ? 'ClientLogin' : 'AdminLogin'
 			this.$store.dispatch('destroyToken')
 				.then(response => {
 					this.$store.commit('setSuccessMessage', response.data.message)
