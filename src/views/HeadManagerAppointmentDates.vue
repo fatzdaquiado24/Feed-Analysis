@@ -7,7 +7,7 @@
     </v-layout>
 
     <v-card class="mb-3">
-      <v-card-title class="grey lighten-4 py-4 title">Incomings</v-card-title>
+      <v-card-title class="grey lighten-4 py-4 title"></v-card-title>
       <v-container class="text-xs-center">
         <v-layout v-if="!loading" wrap>
           <v-flex sm6 xs12 class="text-sm-left text-xs-center">
