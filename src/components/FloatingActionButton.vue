@@ -1,0 +1,11 @@
+<template>
+	<v-btn
+		fab
+		bottom
+		color="accent"
+		right
+		fixed
+	>
+		<v-icon>add</v-icon>
+	</v-btn>
+</template>
