@@ -42,6 +42,14 @@ const clientRoutes = [
           requires: ['client']
         }
       },
+      {
+        path: 'analysis-reports',
+        name: 'ClientAnalysisReports',
+        component: () => import('./views/ClientAnalysisReports.vue'),
+        meta: {
+          requires: ['client']
+        }
+      },
     ]
   }
 ]

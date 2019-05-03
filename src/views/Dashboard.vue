@@ -71,6 +71,7 @@ export default {
 				'client': [
 					{ icon: 'open_in_new', text: 'Laboratory Analysis', route: 'ClientLaboratoryAnalysis' },
 					{ icon: 'pin_drop', text: 'Our Office Location', route: 'ClientOurOfficeLocation' },
+					{ icon: 'file_copy', text: 'Analysis Reports', route: 'ClientAnalysisReports' },
 				],
 				'head manager': [
 					{ icon: 'account_circle', text: 'Clients', route: 'HeadManagerClients' },
