@@ -38,13 +38,14 @@
             <template v-else>{{ getValueFromObject(props.item, item.value, item.subvalue) }}</template>
           </td>
           <td>
-            <v-btn
-              small
-              class="ma-0"
-              color="teal"
-              dark
-              @click="showUpdateDialog(props.item.id)"
-            >Mark sample(s) as received</v-btn>
+            <v-icon
+							small
+							class="mr-2"
+							@click="showMeatInspectionCertificate(props.item.id)"
+							title="Certificate"
+						>
+							visibility
+						</v-icon>
           </td>
         </template>
 
@@ -116,21 +117,22 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="updateDialog" width="800px">
-      <v-card>
-        <v-card-title class="grey lighten-4 py-4 title">Confirm receive?</v-card-title>
-        <v-progress-linear class="my-0" :indeterminate="true" height="3" :active="updating"></v-progress-linear>
-        <form data-vv-scope="update_form">
-          <v-container grid-list-sm class="pa-4">Are you sure you want to mark this as received?</v-container>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn flat color="primary" @click="updateDialog = false">Cancel</v-btn>
-            <v-btn flat @click="updateLaboratoryAnalysisRequest" :loading="updating">Continue</v-btn>
-          </v-card-actions>
-        </form>
-      </v-card>
-    </v-dialog>
+    <v-dialog v-model="certificateDialog" width="800px">
+			<v-card>
+				<v-card-title class="grey lighten-4 py-4 title">Certificate</v-card-title>
+				<v-container grid-list-sm class="pa-4 text-xs-center">
+					<v-progress-circular v-if="certificateLoading" :size="50"
+						color="primary"
+						indeterminate />
+					<span v-else-if="certificateError">{{ certificateError }}</span>
+					<embed v-else :src="`data:application/pdf;base64,${certificateData}`" style="width:100%;height:400px;">
+				</v-container>
+				<v-card-actions>
+					<v-spacer></v-spacer>
+					<v-btn flat color="primary" @click="certificateDialog = false">Cancel</v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
   </div>
 </template>
 
@@ -140,30 +142,16 @@ export default {
     return {
       selected: {},
       viewDialog: false,
-      updateDialog: false,
-      updateId: null,
       loading: true,
-      updating: false,
       headers: [
         { text: "Id", value: "id" },
         { text: "Client Name", value: "client.name" },
         { text: "Email Address", value: "client.email" },
         { text: "Cellphone Number", value: "client.cellphone_number" },
-        { text: "Appointment Date", value: "appointment_date" },
-        {
-          text: "Samples",
-          value: "feed_analysis_tests",
-          showArrayLengthOnly: true,
-          list: {
-            Id: "id",
-            Name: "sample_name"
-          }
-        },
         {
           text: "Created At",
           value: "created_at",
           key: null,
-          hideInTable: true
         },
         {
           text: "Last Updated At",
@@ -174,7 +162,11 @@ export default {
         { text: "Actions", sortable: false }
       ],
       items: [],
-      search: ""
+      search: "",
+      certificateDialog: false,
+			certificateLoading: false,
+			certificateError: null,
+			certificateData: null,
     };
   },
   created() {
@@ -313,58 +305,29 @@ export default {
           this.loading = false;
         });
     },
+    showMeatInspectionCertificate(id) {
+			this.certificateError = null
+			this.certificateData = null
+			this.certificateLoading = true
+			this.certificateDialog = true
+
+			window.axios.get(`/certificates/${id}`)
+				.then(response => {
+					this.certificateData = response.data.pdf
+				})
+				.catch(error => {
+					let message = error.response ? error.response.data.message : 'An Error Has Occurred'
+					this.certificateError = message
+					this.$vueOnToast.pop('error', 'Error', message)
+				})
+				.finally(() => {
+					this.certificateLoading = false
+				})
+		},
     showViewDialog(object) {
       this.selected = object;
       this.viewDialog = true;
     },
-    showUpdateDialog(id) {
-      this.updateId = id;
-      this.$validator.reset();
-      this.updateDialog = true;
-    },
-    updateLaboratoryAnalysisRequest() {
-      if (!this.updating && this.updateDialog) {
-        this.$validator.validateAll("update_form").then(result => {
-          if (result) {
-            this.updating = true;
-
-            window.axios
-              .put(`/laboratory-analysis-requests/${this.updateId}`)
-              .then(response => {
-                this.updateDialog = false;
-                this.$vueOnToast.pop(
-                  "success",
-                  "Success",
-                  response.data.message
-                );
-                this.refresh();
-              })
-              .catch(error => {
-                if (error.response && "errors" in error.response.data) {
-                  const errors = error.response.data.errors;
-
-                  for (const messages of Object.values(errors)) {
-                    for (const message of messages) {
-                      this.$vueOnToast.pop("error", "Error", message);
-                    }
-                  }
-                } else {
-                  this.$vueOnToast.pop(
-                    "error",
-                    "Error",
-                    error.response
-                      ? error.response.data.message
-                      : "An Error Has Occurred"
-                  );
-                }
-              })
-              .finally(() => {
-                this.updating = false;
-              });
-          }
-        });
-      }
-    }
   }
 };
 </script>

@@ -50,6 +50,6 @@ export default {
     return {
       drawer: false
     };
-  }
+  },
 };
 </script>
