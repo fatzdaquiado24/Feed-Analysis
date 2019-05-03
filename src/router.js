@@ -34,6 +34,14 @@ const clientRoutes = [
           requires: ['client']
         }
       },
+      {
+        path: 'our-office-location',
+        name: 'ClientOurOfficeLocation',
+        component: () => import('./views/ClientOurOfficeLocation.vue'),
+        meta: {
+          requires: ['client']
+        }
+      },
     ]
   }
 ]

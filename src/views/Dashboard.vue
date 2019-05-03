@@ -31,7 +31,7 @@
 			fixed
 		>
 			<v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-			<v-toolbar-title>BFP Fire Alarm System</v-toolbar-title>
+			<v-toolbar-title>DA Feed Chemical Analysis</v-toolbar-title>
 			<v-spacer></v-spacer>
 			<span class="hidden-xs-only text-capitalize">Welcome {{ $store.getters.loginType }}</span>
 			<v-toolbar-items dense>
@@ -70,6 +70,7 @@ export default {
 			items: {
 				'client': [
 					{ icon: 'open_in_new', text: 'Laboratory Analysis', route: 'ClientLaboratoryAnalysis' },
+					{ icon: 'pin_drop', text: 'Our Office Location', route: 'ClientOurOfficeLocation' },
 				],
 				'head manager': [
 					{ icon: 'account_circle', text: 'Clients', route: 'HeadManagerClients' },

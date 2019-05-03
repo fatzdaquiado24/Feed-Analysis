@@ -247,21 +247,8 @@ export default {
             window.axios
               .post("/laboratory-analysis-requests", this.data)
               .then(response => {
-                this.data = {
-                  feed_analysis_tests: [
-                    {
-                      sample_name: null,
-                      analysis_requests: null
-                    }
-                  ]
-                };
-                this.step = 1;
-                this.selectedDate = "";
-                this.$vueOnToast.pop(
-                  "success",
-                  "Success",
-                  response.data.message
-                );
+                this.$store.commit('setSuccessMessage', response.data.message)
+                this.$router.push({ name: 'ClientOurOfficeLocation' })
               })
               .catch(error => {
                 if (error.response && "errors" in error.response.data) {

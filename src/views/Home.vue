@@ -1,7 +1,7 @@
 <template>
   <v-app row>
     <v-toolbar fixed class="white">
-      <v-toolbar-side-icon v-if="$vuetify.breakpoint.smAndDown" @click.stop="drawer = !drawer" />
+      <v-toolbar-side-icon v-if="$vuetify.breakpoint.smAndDown" @click.stop="drawer = !drawer"/>
       <v-toolbar-title>DA Feed Chemical Analysis</v-toolbar-title>
       <v-spacer></v-spacer>
       <div class="hidden-sm-and-down">
@@ -28,7 +28,27 @@
       </v-parallax>
     </section>
 
-    Under development
+    <section>
+      <v-container>
+        <v-layout column wrap class="my-2" align-center>
+          <v-flex xs12 class="my-3">
+            <div class="text-xs-center">
+              <h2 class="headline">Our Location</h2>
+              <span class="subheading">Department of Agriculture</span>
+            </div>
+          </v-flex>
+          <v-flex xs12>
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3925.3348376950994!2d123.88519731471949!3d10.315065170360427!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x33a9994b05612cdf%3A0x43ae638feefe1187!2sDepartment+Of+Agriculture!5e0!3m2!1sen!2sph!4v1556856462360!5m2!1sen!2sph"
+              width="600"
+              frameborder="0"
+              style="border:0;width:100%"
+              allowfullscreen
+            ></iframe>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </section>
 
     <v-footer dark height="auto">
       <v-card class="flex" flat tile>
@@ -37,7 +57,8 @@
         </v-card-title>
 
         <v-card-actions class="grey darken-3 justify-center">
-          &copy;2019<strong class="ml-2"> DA Feed Chemical Analysis</strong>
+          &copy;2019
+          <strong class="ml-2">DA Feed Chemical Analysis</strong>
         </v-card-actions>
       </v-card>
     </v-footer>
@@ -50,6 +71,6 @@ export default {
     return {
       drawer: false
     };
-  },
+  }
 };
 </script>
