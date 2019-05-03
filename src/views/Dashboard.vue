@@ -75,8 +75,18 @@ export default {
 					{ icon: 'account_circle', text: 'Clients', route: 'HeadManagerClients' },
 					{ icon: 'reply', text: 'Receivers', route: 'HeadManagerReceivers' },
 					{ icon: 'assignment_ind', text: 'Chemists', route: 'HeadManagerChemists' },
+					{ icon: 'description', text: 'Certificate Releasers', route: 'HeadManagerCertificateReleasers' },
 					{ icon: 'event_notes', text: 'Appointment Dates', route: 'HeadManagerAppointmentDates' },
 					{ icon: 'sort', text: 'Chemical Tests', route: 'HeadManagerChemicalTests' },
+				],
+				'chemist': [
+					{ icon: 'open_in_new', text: 'Analysis Requests', route: 'ChemistAnalysisRequests' },
+				],
+				'receiver': [
+					{ icon: 'reply', text: 'Samples Receiving', route: 'ReceiverSamplesReceiving' },
+				],
+				'certificate releaser': [
+					{ icon: 'reply', text: 'Certificate Releasing', route: 'CertificateReleaserCertificateReleasing' },
 				],
 			}
 		}

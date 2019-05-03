@@ -146,6 +146,7 @@ export default {
         { text: "Email Address", value: "email" },
         { text: "Cellphone Number", value: "cellphone_number" },
         { text: "Address", value: "address", hideInTable: true },
+        { text: "Client Type", value: "client_type" },
         {
           text: "Valid Id",
           value: "valid_id",

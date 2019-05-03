@@ -38,17 +38,9 @@ const clientRoutes = [
   }
 ]
 
-const adminRoutes = [
-  {
-    path: '/admin/login',
-    name: 'AdminLogin',
-    component: () => import('./views/AdminLogin.vue'),
-    meta: {
-      requires: [null]
-    }
-  },
-  {
-    path: '/admin',
+const headManagerRoutes = [
+    {
+    path: '/head-manager',
     redirect: { name: 'HeadManagerClients' },
     component: () => import('./views/Dashboard.vue'),
     children: [
@@ -77,6 +69,14 @@ const adminRoutes = [
         }
       },
       {
+        path: 'certificate-releasers',
+        name: 'HeadManagerCertificateReleasers',
+        component: () => import('./views/HeadManagerCertificateReleasers.vue'),
+        meta: {
+          requires: ['head manager']
+        }
+      },
+      {
         path: 'appointment-dates',
         name: 'HeadManagerAppointmentDates',
         component: () => import('./views/HeadManagerAppointmentDates.vue'),
@@ -96,6 +96,60 @@ const adminRoutes = [
   }
 ]
 
+const chemistRoutes = [
+  {
+    path: '/chemist',
+    redirect: { name: 'ChemistAnalysisRequests' },
+    component: () => import('./views/Dashboard.vue'),
+    children: [
+      {
+        path: 'analysis-requests',
+        name: 'ChemistAnalysisRequests',
+        component: () => import('./views/ChemistAnalysisRequests.vue'),
+        meta: {
+          requires: ['chemist']
+        }
+      },
+    ]
+  }
+]
+
+const receiverRoutes = [
+  {
+    path: '/receiver',
+    redirect: { name: 'ReceiverSamplesReceiving' },
+    component: () => import('./views/Dashboard.vue'),
+    children: [
+      {
+        path: 'samples-receiving',
+        name: 'ReceiverSamplesReceiving',
+        component: () => import('./views/ReceiverSamplesReceiving.vue'),
+        meta: {
+          requires: ['receiver']
+        }
+      },
+    ]
+  }
+]
+
+const certificateReleaserRoutes = [
+  {
+    path: '/certificate-releaser',
+    redirect: { name: 'CertificateReleaserCertificateReleasing' },
+    component: () => import('./views/Dashboard.vue'),
+    children: [
+      {
+        path: 'certificate-releasing',
+        name: 'CertificateReleaserCertificateReleasing',
+        component: () => import('./views/CertificateReleaserCertificateReleasing.vue'),
+        meta: {
+          requires: ['certificate releaser']
+        }
+      },
+    ]
+  }
+]
+
 const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
@@ -105,8 +159,19 @@ const router = new Router({
       name: 'Home',
       component: () => import('./views/Home.vue'),
     },
+    {
+      path: '/admin/login',
+      name: 'AdminLogin',
+      component: () => import('./views/AdminLogin.vue'),
+      meta: {
+        requires: [null]
+      }
+    },
     ...clientRoutes,
-    ...adminRoutes
+    ...headManagerRoutes,
+    ...chemistRoutes,
+    ...receiverRoutes,
+    ...certificateReleaserRoutes
   ]
 })
 
@@ -117,17 +182,20 @@ router.beforeEach((to, from, next) => {
     } else {
       if(to.meta.requires.includes('client')) {
         next({ name: 'ClientLogin' })
-      } else if(to.meta.requires.includes('head manager')) {
+      } else if(!to.meta.requires.includes(null)) {
         next({ name: 'AdminLogin' })
       } else if(to.meta.requires.includes(null)) {
         if(store.getters.loginType == 'client') {
           next({ name: 'ClientLaboratoryAnalysis' })
         } else if(store.getters.loginType == 'head manager') {
           next({ name: 'HeadManagerClients' })
+        } else if(store.getters.loginType == 'chemist') {
+          next({ name: 'ChemistAnalysisRequests' })
         } 
       }
     }
   } else {
+    
     if(to.matched.length > 0) {
       next()
     } else {

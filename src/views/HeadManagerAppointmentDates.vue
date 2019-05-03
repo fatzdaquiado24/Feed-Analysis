@@ -32,13 +32,19 @@
               >
                 <template v-slot:day="{ date }">
                   <template v-if="appointmentDate(date)">
-                    <div
-                      class="ma-1 primary"
-                    >Appointed: {{appointmentDate(date).appointed}}</div>
+                    <div class="hidden-md-and-down">
+                      <div
+                        class="ma-1 primary "
+                      >Appointed: {{appointmentDate(date).appointed}}</div>
+
+                      <div
+                        class="ma-1 primary"
+                      >Max appointments: {{appointmentDate(date).maximum_appointment}}</div>
+                    </div>
 
                     <div
-                      class="ma-1 primary"
-                    >Max appointments: {{appointmentDate(date).maximum_appointment}}</div>
+                      class="ma-1 primary hidden-lg-and-up"
+                      >{{ `${appointmentDate(date).appointed}/${appointmentDate(date).maximum_appointment}` }}</div>
                   </template>
                 </template>
               </v-calendar>
@@ -60,7 +66,7 @@
               mask="###"
               maxlength="3"
               :error-messages="errors.collect('maximum_appointment')"
-              v-validate="'required|min_value:1|max_value:999'"
+              v-validate="'required|min_value:0|max_value:999'"
               data-vv-name="maximum_appointment"
               data-vv-as="maximum appointments"
               key="maximum_appointment"

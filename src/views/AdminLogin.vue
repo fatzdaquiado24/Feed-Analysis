@@ -17,6 +17,9 @@
               v-model="type"
               :items="[
                 { value: 'head manager', text: 'Head Manager' },
+                { value: 'chemist', text: 'Chemist' },
+                { value: 'receiver', text: 'Receiver' },
+                { value: 'certificate releaser', text: 'Certificate Releaser' },
               ]"
               menu-props="auto"
               label="Login type"
@@ -59,7 +62,13 @@ export default {
         })
           .then(() => {
             this.$store.commit('setSuccessMessage', 'Login Successful')
-            this.$router.push({ name: 'HeadManagerClients' })
+            const homeRoutes = {
+              'head manager': 'HeadManagerClients',
+              'chemist': 'ChemistAnalysisRequests',
+              'receiver': 'ReceiverSamplesReceiving',
+              'certificate releaser': 'CertificateReleaserCertificateReleasing',
+            }
+            this.$router.push({ name: homeRoutes[this.type] })
           })
           .catch(error => {
             this.password = ''
