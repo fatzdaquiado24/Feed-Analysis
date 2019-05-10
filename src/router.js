@@ -43,6 +43,14 @@ const clientRoutes = [
         }
       },
       {
+        path: 'my-appointments',
+        name: 'ClientMyAppointments',
+        component: () => import('./views/ClientMyAppointments.vue'),
+        meta: {
+          requires: ['client']
+        }
+      },
+      {
         path: 'analysis-reports',
         name: 'ClientAnalysisReports',
         component: () => import('./views/ClientAnalysisReports.vue'),
@@ -192,6 +200,7 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
+
   if('requires' in to.meta) {
     if(to.meta.requires.includes(store.getters.loginType)) {
       next()
@@ -207,6 +216,10 @@ router.beforeEach((to, from, next) => {
           next({ name: 'HeadManagerClients' })
         } else if(store.getters.loginType == 'chemist') {
           next({ name: 'ChemistAnalysisRequests' })
+        }  else if(store.getters.loginType == 'receiver') {
+          next({ name: 'ReceiverSamplesReceiving' })
+        } else if(store.getters.loginType == 'certificate releaser') {
+          next({ name: 'CertificateReleaserCertificateReleasing' })
         } 
       }
     }

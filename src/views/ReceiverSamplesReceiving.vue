@@ -39,12 +39,14 @@
           </td>
           <td>
             <v-btn
+              v-if="props.item.status == 'Sample Receiving'"
               small
               class="ma-0"
               color="teal"
               dark
               @click="showUpdateDialog(props.item.id)"
             >Mark sample(s) as received</v-btn>
+            <template v-else>-</template>
           </td>
         </template>
 
@@ -159,6 +161,7 @@ export default {
             Name: "sample_name"
           }
         },
+        { text: "Status", value: "status" },
         {
           text: "Created At",
           value: "created_at",

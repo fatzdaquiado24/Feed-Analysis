@@ -39,6 +39,7 @@
           </td>
           <td>
             <v-icon
+              v-if="props.item.status == 'Complete'"
 							small
 							class="mr-2"
 							@click="showMeatInspectionCertificate(props.item.id)"
@@ -46,6 +47,7 @@
 						>
 							visibility
 						</v-icon>
+            <template v-else>-</template>
           </td>
         </template>
 
@@ -159,6 +161,7 @@ export default {
           key: null,
           hideInTable: true
         },
+        { text: "Status", value: "status" },
         { text: "Actions", sortable: false }
       ],
       items: [],

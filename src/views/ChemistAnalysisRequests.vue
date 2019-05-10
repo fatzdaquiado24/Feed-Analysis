@@ -34,7 +34,8 @@
             @click="showViewDialog(props.item)"
           >{{ getValueFromObject(props.item, item.value, item.subvalue) }}</td>
           <td>
-            <v-icon small @click="showUpdateDialog(props.item.id)" title="Update Record">edit</v-icon>
+            <v-icon v-if="props.item.status == 'Testing'" small @click="showUpdateDialog(props.item.id)" title="Update Record">edit</v-icon>
+            <template v-else>-</template>
           </td>
         </template>
 
@@ -161,6 +162,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn flat color="primary" @click="updateDialog = false">Close</v-btn>
+          <v-btn flat @click="completeRequest" :loading="completing">Mark as Complete</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -177,6 +179,7 @@ export default {
       updateId: null,
       loading: true,
       updating: false,
+      completing: false,
       headers: [
         { text: "Id", value: "id" },
         { text: "Client Name", value: "client.name", key: null },
@@ -190,6 +193,11 @@ export default {
           text: "Sample Received By",
           value: "receiver.name",
           subvalue: "receiver",
+          key: null
+        },
+        {
+          text: "Status",
+          value: "status",
           key: null
         },
         {
@@ -358,6 +366,7 @@ export default {
         {}
       );
 
+      this.updateId = id;
       this.updatingLaboratoryAnalysisRequest = currentLaboratoryAnalysisRequest;
       this.$validator.reset();
       this.updateDialog = true;
@@ -371,6 +380,48 @@ export default {
 
             window.axios
               .put(`/analysis-requests/${id}`, { result: this.updatingLaboratoryAnalysisRequest.feed_analysis_tests[index].analysis_requests[index2].result })
+              .then(response => {
+                this.$vueOnToast.pop(
+                  "success",
+                  "Success",
+                  response.data.message
+                );
+                this.refresh();
+              })
+              .catch(error => {
+                if (error.response && "errors" in error.response.data) {
+                  const errors = error.response.data.errors;
+
+                  for (const messages of Object.values(errors)) {
+                    for (const message of messages) {
+                      this.$vueOnToast.pop("error", "Error", message);
+                    }
+                  }
+                } else {
+                  this.$vueOnToast.pop(
+                    "error",
+                    "Error",
+                    error.response
+                      ? error.response.data.message
+                      : "An Error Has Occurred"
+                  );
+                }
+              })
+              .finally(() => {
+                this.updating = false;
+              });
+          }
+        });
+      }
+    },
+    completeRequest() {
+      if (!this.completing && this.updateDialog) {
+        this.$validator.validateAll().then(result => {
+          if (result) {
+            this.completing = true;
+
+            window.axios
+              .put(`/laboratory-analysis-requests/${this.updateId}`)
               .then(response => {
                 this.updateDialog = false;
                 this.$vueOnToast.pop(
@@ -400,7 +451,7 @@ export default {
                 }
               })
               .finally(() => {
-                this.updating = false;
+                this.completing = false;
               });
           }
         });
