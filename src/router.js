@@ -58,6 +58,22 @@ const clientRoutes = [
           requires: ['client']
         }
       },
+      {
+        path: 'customer-feedback',
+        name: 'ClientCustomerFeedback',
+        component: () => import('./views/ClientCustomerFeedback.vue'),
+        meta: {
+          requires: ['client']
+        }
+      },
+      {
+        path: 'file-complaint',
+        name: 'ClientFileComplaint',
+        component: () => import('./views/ClientFileComplaint.vue'),
+        meta: {
+          requires: ['client']
+        }
+      },
     ]
   }
 ]
@@ -112,6 +128,22 @@ const headManagerRoutes = [
         path: 'chemical-tests',
         name: 'HeadManagerChemicalTests',
         component: () => import('./views/HeadManagerChemicalTests.vue'),
+        meta: {
+          requires: ['head manager']
+        }
+      },
+      {
+        path: 'customer-feedback',
+        name: 'HeadManagerCustomerFeedback',
+        component: () => import('./views/HeadManagerCustomerFeedback.vue'),
+        meta: {
+          requires: ['head manager']
+        }
+      },
+      {
+        path: 'complaints',
+        name: 'HeadManagerComplaints',
+        component: () => import('./views/HeadManagerComplaints.vue'),
         meta: {
           requires: ['head manager']
         }

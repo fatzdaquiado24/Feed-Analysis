@@ -73,6 +73,8 @@ export default {
 					{ icon: 'pin_drop', text: 'Our Office Location', route: 'ClientOurOfficeLocation' },
 					{ icon: 'access_time', text: 'My Appointments', route: 'ClientMyAppointments' },
 					{ icon: 'file_copy', text: 'Analysis Reports', route: 'ClientAnalysisReports' },
+					{ icon: 'feedback', text: 'Customer Feedback', route: 'ClientCustomerFeedback' },
+					{ icon: 'thumb_down', text: 'File a Complaint', route: 'ClientFileComplaint' },
 				],
 				'head manager': [
 					{ icon: 'account_circle', text: 'Clients', route: 'HeadManagerClients' },
@@ -81,6 +83,8 @@ export default {
 					{ icon: 'description', text: 'Certificate Releasers', route: 'HeadManagerCertificateReleasers' },
 					{ icon: 'event_notes', text: 'Appointment Dates', route: 'HeadManagerAppointmentDates' },
 					{ icon: 'sort', text: 'Chemical Tests', route: 'HeadManagerChemicalTests' },
+					{ icon: 'feedback', text: 'Customer Feedback', route: 'HeadManagerCustomerFeedback' },
+					{ icon: 'thumb_down', text: 'Complaints', route: 'HeadManagerComplaints' },
 				],
 				'chemist': [
 					{ icon: 'open_in_new', text: 'Analysis Requests', route: 'ChemistAnalysisRequests' },

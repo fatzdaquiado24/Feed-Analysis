@@ -42,7 +42,7 @@
               v-if="props.item.status == 'Complete'"
 							small
 							class="mr-2"
-							@click="showMeatInspectionCertificate(props.item.id)"
+							@click="showCertificate(props.item.id)"
 							title="Certificate"
 						>
 							visibility
@@ -313,7 +313,7 @@ export default {
           this.loading = false;
         });
     },
-    showMeatInspectionCertificate(id) {
+    showCertificate(id) {
 			this.certificateError = null
 			this.certificateData = null
 			this.certificateLoading = true

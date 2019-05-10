@@ -1,14 +1,14 @@
 <template>
   <div>
     <v-layout class="mb-3" align-center>
-      <h1 class="headline font-weight-medium">Certificate Releasing</h1>
+      <h1 class="headline font-weight-medium">Complaints</h1>
       <v-spacer></v-spacer>
       <v-btn small class="ma-0" color="teal" dark @click="refresh">Refresh</v-btn>
     </v-layout>
 
     <v-card>
       <v-card-title>
-        <span class="font-weight-bold text-uppercase">Laboratory Analysis Requests</span>
+        <span class="font-weight-bold text-uppercase">Complaints</span>
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -38,16 +38,7 @@
             <template v-else>{{ getValueFromObject(props.item, item.value, item.subvalue) }}</template>
           </td>
           <td>
-            <v-icon
-              v-if="props.item.status == 'Complete'"
-							small
-							class="mr-2"
-							@click="showCertificate(props.item.id)"
-							title="Certificate"
-						>
-							visibility
-						</v-icon>
-            <template v-else>-</template>
+            <v-icon small @click="showDeleteDialog(props.item.id)" title="Delete Record">delete</v-icon>
           </td>
         </template>
 
@@ -59,57 +50,16 @@
 
     <v-dialog v-model="viewDialog" width="400px">
       <v-card>
-        <v-card-title class="grey lighten-4 py-4 title">Request information</v-card-title>
+        <v-card-title class="grey lighten-4 py-4 title">Complaint information</v-card-title>
         <v-list two-line subheader>
-          <template v-for="object in viewHeaders">
-            <v-list-tile
-              v-if="getTypeFromObject(selected, object.value, object.subvalue) != 'object'"
-              :key="object.text"
-            >
-              <v-list-tile-content>
-                <v-list-tile-title>{{ object.text }}</v-list-tile-title>
-                <v-list-tile-sub-title
-                  style="white-space: normal"
-                >{{ getValueFromObject(selected, object.value, object.subvalue) }}</v-list-tile-sub-title>
-              </v-list-tile-content>
-            </v-list-tile>
-
-            <v-list-group v-else :key="object.text">
-              <v-list-tile slot="activator">
-                <v-list-tile-content>
-                  <v-list-tile-title>
-                    {{ object.text }}
-                    <v-chip
-                      color="teal lighten-4"
-                      class="ma-0"
-                      label
-                      small
-                      disabled
-                    >{{ getArrayLengthFromObject(selected, object.value) }}</v-chip>
-                  </v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-
-              <v-card
-                v-for="(item, index) in getArrayLengthFromObject(selected, object.value)"
-                :key="index"
-                tile
-                flat
-              >
-                <v-card-title class="grey darken-3 white--text">Sample # {{ item }}</v-card-title>
-                <v-list two-line>
-                  <v-list-tile v-for="(value, key) in object.list" :key="key" avatar>
-                    <v-list-tile-content>
-                      <v-list-tile-title>{{ key }}</v-list-tile-title>
-                      <v-list-tile-sub-title
-                        style="white-space: normal"
-                      >{{ getValueFromObject(selected, [object.value, index, value].join('.')) }}</v-list-tile-sub-title>
-                    </v-list-tile-content>
-                  </v-list-tile>
-                </v-list>
-              </v-card>
-            </v-list-group>
-          </template>
+          <v-list-tile v-for="object in viewHeaders" :key="object.text">
+            <v-list-tile-content>
+              <v-list-tile-title>{{ object.text }}</v-list-tile-title>
+              <v-list-tile-sub-title
+                style="white-space: normal"
+              >{{ getValueFromObject(selected, object.value, object.subvalue) }}</v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
         </v-list>
 
         <v-card-actions>
@@ -119,22 +69,20 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="certificateDialog" width="800px">
-			<v-card>
-				<v-card-title class="grey lighten-4 py-4 title">Certificate</v-card-title>
-				<v-container grid-list-sm class="pa-4 text-xs-center">
-					<v-progress-circular v-if="certificateLoading" :size="50"
-						color="primary"
-						indeterminate />
-					<span v-else-if="certificateError">{{ certificateError }}</span>
-					<embed v-else :src="`data:application/pdf;base64,${certificateData}`" style="width:100%;height:400px;">
-				</v-container>
-				<v-card-actions>
-					<v-spacer></v-spacer>
-					<v-btn flat color="primary" @click="certificateDialog = false">Cancel</v-btn>
-				</v-card-actions>
-			</v-card>
-		</v-dialog>
+    <v-dialog v-model="deleteDialog" width="800px">
+      <v-card>
+        <v-card-title class="grey lighten-4 py-4 title">Confirm delete?</v-card-title>
+        <v-progress-linear class="my-0" :indeterminate="true" height="3" :active="deleting"></v-progress-linear>
+
+        <v-container grid-list-sm class="pa-4">Are you sure you want to delete this complaint?</v-container>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn flat color="primary" @click="deleteDialog = false">Cancel</v-btn>
+          <v-btn flat @click="deleteComplaint" :loading="deleting">Delete</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -145,36 +93,29 @@ export default {
       selected: {},
       viewDialog: false,
       loading: true,
+      deleteDialog: false,
+      deleteId: null,
+      deleting: false,
       headers: [
         { text: "Id", value: "id" },
         { text: "Client Name", value: "client.name" },
         { text: "Email Address", value: "client.email" },
         { text: "Cellphone Number", value: "client.cellphone_number" },
+        { text: "Complaint Description", value: "description" },
         {
           text: "Created At",
           value: "created_at",
-          key: null,
+          key: null
         },
-        {
-          text: "Last Updated At",
-          value: "updated_at",
-          key: null,
-          hideInTable: true
-        },
-        { text: "Status", value: "status" },
         { text: "Actions", sortable: false }
       ],
       items: [],
       search: "",
-      certificateDialog: false,
-			certificateLoading: false,
-			certificateError: null,
-			certificateData: null,
     };
   },
   created() {
     window.axios
-      .get("/laboratory-analysis-requests")
+      .get("/complaints")
       .then(response => {
         this.items = response.data;
       })
@@ -291,7 +232,7 @@ export default {
       this.loading = true;
 
       window.axios
-        .get("/laboratory-analysis-requests")
+        .get("/complaints")
         .then(response => {
           this.items = response.data;
         })
@@ -308,29 +249,40 @@ export default {
           this.loading = false;
         });
     },
-    showCertificate(id) {
-			this.certificateError = null
-			this.certificateData = null
-			this.certificateLoading = true
-			this.certificateDialog = true
-
-			window.axios.get(`/certificates/${id}`)
-				.then(response => {
-					this.certificateData = response.data.pdf
-				})
-				.catch(error => {
-					let message = error.response ? error.response.data.message : 'An Error Has Occurred'
-					this.certificateError = message
-					this.$vueOnToast.pop('error', 'Error', message)
-				})
-				.finally(() => {
-					this.certificateLoading = false
-				})
-		},
     showViewDialog(object) {
       this.selected = object;
       this.viewDialog = true;
     },
+    showDeleteDialog(id) {
+      this.deleteId = id;
+      this.deleteDialog = true;
+    },
+    deleteComplaint() {
+      if (!this.deleting && this.deleteDialog) {
+        this.deleting = true;
+
+        window.axios
+          .delete(`/complaints/${this.deleteId}`)
+          .then(response => {
+            this.deleteDialog = false;
+            this.$vueOnToast.pop("success", "Success", response.data.message);
+            this.refresh();
+          })
+          .catch(error => {
+            this.deleteDialog = false;
+            this.$vueOnToast.pop(
+              "error",
+              "Error",
+              error.response
+                ? error.response.data.message
+                : "An Error Has Occurred"
+            );
+          })
+          .finally(() => {
+            this.deleting = false;
+          });
+      }
+    }
   }
 };
 </script>
