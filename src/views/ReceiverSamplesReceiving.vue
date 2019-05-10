@@ -8,7 +8,7 @@
 
     <v-card>
       <v-card-title>
-        <span class="font-weight-bold text-uppercase">Laboratory Analysis Requests Today</span>
+        <span class="font-weight-bold text-uppercase">Laboratory Analysis Requests</span>
         <v-spacer></v-spacer>
         <v-text-field
           v-model="search"
@@ -51,7 +51,7 @@
         </template>
 
         <template slot="no-data">
-          <span class="text-xs-center">{{ loading ? 'Loading' : 'No appointments with unreceived samples today found' }}</span>
+          <span class="text-xs-center">{{ loading ? 'Loading' : 'No data found' }}</span>
         </template>
       </v-data-table>
     </v-card>
