@@ -40,13 +40,11 @@
           <td>
             <v-icon
               v-if="props.item.status == 'Complete'"
-							small
-							class="mr-2"
-							@click="showCertificate(props.item.id)"
-							title="Certificate"
-						>
-							visibility
-						</v-icon>
+              small
+              class="mr-2"
+              @click="showCertificate(props.item.id)"
+              title="Certificate"
+            >visibility</v-icon>
             <template v-else>-</template>
           </td>
         </template>
@@ -110,6 +108,50 @@
               </v-card>
             </v-list-group>
           </template>
+
+          <v-list-group>
+            <v-list-tile slot="activator">
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  Feed Analysis Tests
+                  <v-chip
+                    color="teal lighten-4"
+                    class="ma-0"
+                    label
+                    small
+                    disabled
+                  >{{ getArrayLengthFromObject(selected, 'feed_analysis_tests') }}</v-chip>
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+
+            <v-card
+              v-for="(feed_analysis_test, index) in selected.feed_analysis_tests"
+              :key="index"
+              tile
+            >
+              <v-card-title class="grey darken-3 white--text">Feed Analysis Test # {{ index + 1 }}</v-card-title>
+              <v-list two-line>
+                <v-list-tile avatar>
+                  <v-list-tile-content>
+                    <v-list-tile-title>Sample Name</v-list-tile-title>
+                    <v-list-tile-sub-title
+                      style="white-space: normal"
+                    >{{ getValueFromObject(feed_analysis_test, 'sample_name') }}</v-list-tile-sub-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+
+                <v-list-tile avatar>
+                  <v-list-tile-content>
+                    <v-list-tile-title>Analysis Requests</v-list-tile-title>
+                    <v-list-tile-sub-title
+                      style="white-space: normal"
+                    >{{ getParameters(feed_analysis_test) }}</v-list-tile-sub-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+            </v-card>
+          </v-list-group>
         </v-list>
 
         <v-card-actions>
@@ -120,21 +162,23 @@
     </v-dialog>
 
     <v-dialog v-model="certificateDialog" width="800px">
-			<v-card>
-				<v-card-title class="grey lighten-4 py-4 title">Certificate</v-card-title>
-				<v-container grid-list-sm class="pa-4 text-xs-center">
-					<v-progress-circular v-if="certificateLoading" :size="50"
-						color="primary"
-						indeterminate />
-					<span v-else-if="certificateError">{{ certificateError }}</span>
-					<embed v-else :src="`data:application/pdf;base64,${certificateData}`" style="width:100%;height:400px;">
-				</v-container>
-				<v-card-actions>
-					<v-spacer></v-spacer>
-					<v-btn flat color="primary" @click="certificateDialog = false">Cancel</v-btn>
-				</v-card-actions>
-			</v-card>
-		</v-dialog>
+      <v-card>
+        <v-card-title class="grey lighten-4 py-4 title">Certificate</v-card-title>
+        <v-container grid-list-sm class="pa-4 text-xs-center">
+          <v-progress-circular v-if="certificateLoading" :size="50" color="primary" indeterminate/>
+          <span v-else-if="certificateError">{{ certificateError }}</span>
+          <embed
+            v-else
+            :src="`data:application/pdf;base64,${certificateData}`"
+            style="width:100%;height:400px;"
+          >
+        </v-container>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn flat color="primary" @click="certificateDialog = false">Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -153,7 +197,7 @@ export default {
         {
           text: "Created At",
           value: "created_at",
-          key: null,
+          key: null
         },
         {
           text: "Last Updated At",
@@ -167,9 +211,9 @@ export default {
       items: [],
       search: "",
       certificateDialog: false,
-			certificateLoading: false,
-			certificateError: null,
-			certificateData: null,
+      certificateLoading: false,
+      certificateError: null,
+      certificateData: null
     };
   },
   created() {
@@ -286,6 +330,19 @@ export default {
         ? returnValue.join(", ")
         : returnValue;
     },
+    getParameters(object) {
+      const analysis_requests = this.getValueFromObject(
+        object,
+        "analysis_requests",
+        null,
+        false
+      );
+      let tests = [];
+      for (let analysis_request of analysis_requests) {
+        tests.push(analysis_request.parameter);
+      }
+      return tests.join(", ");
+    },
     refresh() {
       this.items = [];
       this.loading = true;
@@ -309,28 +366,31 @@ export default {
         });
     },
     showCertificate(id) {
-			this.certificateError = null
-			this.certificateData = null
-			this.certificateLoading = true
-			this.certificateDialog = true
+      this.certificateError = null;
+      this.certificateData = null;
+      this.certificateLoading = true;
+      this.certificateDialog = true;
 
-			window.axios.get(`/certificates/${id}`)
-				.then(response => {
-					this.certificateData = response.data.pdf
-				})
-				.catch(error => {
-					let message = error.response ? error.response.data.message : 'An Error Has Occurred'
-					this.certificateError = message
-					this.$vueOnToast.pop('error', 'Error', message)
-				})
-				.finally(() => {
-					this.certificateLoading = false
-				})
-		},
+      window.axios
+        .get(`/certificates/${id}`)
+        .then(response => {
+          this.certificateData = response.data.pdf;
+        })
+        .catch(error => {
+          let message = error.response
+            ? error.response.data.message
+            : "An Error Has Occurred";
+          this.certificateError = message;
+          this.$vueOnToast.pop("error", "Error", message);
+        })
+        .finally(() => {
+          this.certificateLoading = false;
+        });
+    },
     showViewDialog(object) {
       this.selected = object;
       this.viewDialog = true;
-    },
+    }
   }
 };
 </script>

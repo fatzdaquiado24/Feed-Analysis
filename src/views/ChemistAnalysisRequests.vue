@@ -34,7 +34,12 @@
             @click="showViewDialog(props.item)"
           >{{ getValueFromObject(props.item, item.value, item.subvalue) }}</td>
           <td>
-            <v-icon v-if="props.item.status == 'Testing'" small @click="showUpdateDialog(props.item.id)" title="Update Record">edit</v-icon>
+            <v-icon
+              v-if="props.item.status == 'Testing'"
+              small
+              @click="showUpdateDialog(props.item.id)"
+              title="Update Record"
+            >edit</v-icon>
             <template v-else>-</template>
           </td>
         </template>
@@ -57,6 +62,50 @@
               >{{ getValueFromObject(selected, object.value, object.subvalue) }}</v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
+
+          <v-list-group>
+            <v-list-tile slot="activator">
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  Feed Analysis Tests
+                  <v-chip
+                    color="teal lighten-4"
+                    class="ma-0"
+                    label
+                    small
+                    disabled
+                  >{{ getArrayLengthFromObject(selected, 'feed_analysis_tests') }}</v-chip>
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+
+            <v-card
+              v-for="(feed_analysis_test, index) in selected.feed_analysis_tests"
+              :key="index"
+              tile
+            >
+              <v-card-title class="grey darken-3 white--text">Feed Analysis Test # {{ index + 1 }}</v-card-title>
+              <v-list two-line>
+                <v-list-tile avatar>
+                  <v-list-tile-content>
+                    <v-list-tile-title>Sample Name</v-list-tile-title>
+                    <v-list-tile-sub-title
+                      style="white-space: normal"
+                    >{{ getValueFromObject(feed_analysis_test, 'sample_name') }}</v-list-tile-sub-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+
+                <v-list-tile avatar>
+                  <v-list-tile-content>
+                    <v-list-tile-title>Analysis Requests</v-list-tile-title>
+                    <v-list-tile-sub-title
+                      style="white-space: normal"
+                    >{{ getParameters(feed_analysis_test) }}</v-list-tile-sub-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+            </v-card>
+          </v-list-group>
         </v-list>
 
         <v-card-actions>
@@ -255,7 +304,9 @@ export default {
     },
     filteredHeaders() {
       return this.headers.filter(object => {
-        return object.value && object.hideInTable !== true && object.hidden !== true;
+        return (
+          object.value && object.hideInTable !== true && object.hidden !== true
+        );
       });
     },
     viewHeaders() {
@@ -310,6 +361,19 @@ export default {
       return join && Array.isArray(returnValue)
         ? returnValue.join(", ")
         : returnValue;
+    },
+    getParameters(object) {
+      const analysis_requests = this.getValueFromObject(
+        object,
+        "analysis_requests",
+        null,
+        false
+      );
+      let tests = [];
+      for (let analysis_request of analysis_requests) {
+        tests.push(analysis_request.parameter);
+      }
+      return tests.join(", ");
     },
     refresh() {
       this.items = [];
@@ -376,10 +440,13 @@ export default {
         this.$validator.validateAll(`update_form[${id}]`).then(result => {
           if (result) {
             this.updating = true;
-            this.updateId = id
+            this.updateId = id;
 
             window.axios
-              .put(`/analysis-requests/${id}`, { result: this.updatingLaboratoryAnalysisRequest.feed_analysis_tests[index].analysis_requests[index2].result })
+              .put(`/analysis-requests/${id}`, {
+                result: this.updatingLaboratoryAnalysisRequest
+                  .feed_analysis_tests[index].analysis_requests[index2].result
+              })
               .then(response => {
                 this.$vueOnToast.pop(
                   "success",
