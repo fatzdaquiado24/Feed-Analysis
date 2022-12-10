@@ -13,7 +13,7 @@
     "axios": "^0.18.0",
     "connect-history-api-fallback": "^1.6.0",
     "core-js": "^2.6.5",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "material-design-icons-iconfont": "^4.0.5",
     "path": "^0.12.7",
     "serve-static": "^1.13.2",
